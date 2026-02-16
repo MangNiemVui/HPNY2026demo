@@ -1,4 +1,4 @@
-/* styles.css — HPNY 2026 (Năm Ngọ) • Reskin Tết phương Đông + thêm mini game demo
+/* styles.css — HPNY 2026 (Năm Ngọ) • Reskin Tết phương Đông + thêm mini game
    - Không thay data đăng nhập / lời chúc
    - Thêm countdown + flow: nhập ngân hàng -> vòng quay -> lắc quẻ
    - Animation bằng CSS/JS (không GIF)
@@ -8,7 +8,7 @@
   --ink:#2b1500;
   --muted: rgba(43,21,0,.72);
 
-  --bgDeep:#2b0008;
+  --bgDeep:#4b0014;
   --bgRed:#7a0014;
   --bgRed2:#b40018;
   --gold:#ffcc4d;
@@ -342,7 +342,7 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
   align-items:center;
   justify-content:center;
   padding:18px;
-  background: rgba(0,0,0,.58);
+  background: rgba(43,0,8,.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 13000;
@@ -440,7 +440,7 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
 .muted{opacity:.75}
 
 /* Owner modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999}
+.modal{position:fixed;inset:0;background:rgba(43,0,8,.58);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999}
 .modalCard{width:min(980px,100%);max-height:82vh;overflow:auto;background:rgba(255,243,222,.98);border-radius:20px;padding:14px;box-shadow:0 22px 60px rgba(0,0,0,.35);border:1px solid rgba(255, 220, 150, .32)}
 .modalHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
 .modalTitle{font-weight:950;font-size:16px}
@@ -451,14 +451,14 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
 .pillMini{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,204,77,.20);border:1px solid rgba(255,204,77,.40);font-size:12px}
 
 /* Tap audio overlay */
-.tapAudio{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.45);backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);z-index: 999; padding: 18px;}
+.tapAudio{position:fixed;inset:0;display:grid;place-items:center;background:rgba(43,0,8,.58);backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);z-index: 999; padding: 18px;}
 .tapCard{width: min(420px, 92vw);border-radius: 20px;background: rgba(255,243,222,.92);border: 1px solid rgba(255, 220, 150, .42);box-shadow: 0 18px 50px rgba(0,0,0,.35);padding: 16px;text-align:center;}
 .tapTitle{font-weight:950;font-size:18px;margin-bottom:6px;}
 .tapSub{font-size:13px;color: rgba(43,21,0,.72);line-height:1.45;margin-bottom:12px;}
 .tapBtn{display:inline-block;padding:10px 14px;border-radius:999px;color:#fff;font-weight:950;background: linear-gradient(90deg, var(--accent), var(--accent2));box-shadow: 0 10px 25px rgba(180,0,24,.22);}
 
 /* Success overlay */
-.successPage{position:fixed; inset:0; display:grid; place-items:center; padding:18px; background: rgba(0,0,0,.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 99999;}
+.successPage{position:fixed; inset:0; display:grid; place-items:center; padding:18px; background: rgba(43,0,8,.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 99999;}
 .successCard{width:min(520px, 92vw); border-radius: 22px; background: rgba(255,243,222,.92); border: 1px solid rgba(255, 220, 150, .42); box-shadow: 0 18px 55px rgba(0,0,0,.35); padding: 18px 16px; text-align:center;}
 .successTick{width: 92px; height: 92px; border-radius: 999px; margin: 4px auto 12px; display:grid; place-items:center; background: linear-gradient(135deg, rgba(255,204,77,.35), rgba(180,0,24,.18)); border: 1px solid rgba(255, 220, 150, .34); box-shadow: 0 14px 30px rgba(180,0,24,.18);}
 .successTick span{ font-size: 52px; line-height: 1; }
@@ -475,7 +475,7 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
   padding: 18px;
   background:
     radial-gradient(900px 700px at 50% 35%, rgba(255,204,77,.20), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.62), rgba(0,0,0,.18));
+    linear-gradient(180deg, rgba(43,0,8,.82), rgba(43,0,8,.35));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -503,17 +503,6 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
 
 .flowCard > *{ position: relative; z-index: 2; }
 
-.demoBanner{
-  position: sticky;
-  top: 0;
-  margin: -16px -16px 10px;
-  padding: 10px 14px;
-  background: linear-gradient(90deg, rgba(180,0,24,.90), rgba(255,204,77,.55));
-  color: rgba(255,255,255,.98);
-  font-weight: 950;
-  letter-spacing: .3px;
-  border-bottom: 1px solid rgba(255,255,255,.18);
-}
 
 .stage{ text-align:center; }
 .stageHero{ display:flex; justify-content:center; margin: 6px 0 10px; }
@@ -717,4 +706,16 @@ button:disabled{opacity:.55; cursor:not-allowed; transform:none; filter:none;}
   @media (max-width: 520px){
     .wrap{padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;}
   }
+}
+
+/* Hint unlock game */
+.gameLockHintTop{
+  margin: 10px 16px 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 220, 150, .38);
+  background: rgba(180, 0, 24, .10);
+  color: rgba(43,21,0,.88);
+  font-size: 13px;
+  box-shadow: 0 10px 24px rgba(180,0,24,.14);
 }

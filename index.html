@@ -30,8 +30,6 @@
       <!-- ===== Post-login flow overlay ===== -->
       <div class="flow hidden" id="flow" role="dialog" aria-modal="true" aria-label="Trò chơi đầu năm">
         <div class="flowCard">
-          <div class="demoBanner hidden" id="demoBanner">DEMO MODE • Kết quả được cấu hình để test</div>
-
           <!-- Stage: Intro -->
           <section class="stage" id="stageIntro">
             <div class="stageHero">
@@ -48,13 +46,12 @@
             </div>
 
             <button class="btnPrimary" id="btnIntroStart" type="button">Bắt đầu nhận lộc ✨</button>
-            <p class="stageHint">* Đây là demo nội bộ. Banner DEMO sẽ hiển thị khi bật preset kết quả.</p>
           </section>
 
           <!-- Stage: Bank info -->
           <section class="stage hidden" id="stageBank">
             <h2 class="stageTitle">Nhập thông tin nhận lộc</h2>
-            <p class="stageSub">Vui lòng nhập đúng để demo hiển thị như thật.</p>
+            <p class="stageSub">Vui lòng nhập đúng thông tin để nhận lộc đầu năm nhé 🧧</p>
 
             <div class="formGrid">
               <label class="field">
@@ -166,6 +163,8 @@
           <div class="row2">
             <button id="btnUnlock" class="btnPrimary" type="button">Mở thiệp ✨</button>
             <button class="btnSecondary" id="btnOwnerView" type="button" disabled>Xem thiệp người này (Owner)</button>
+            <!-- NEW: Owner cho chơi lại (local) -->
+            <button class="btnSecondary" id="btnOwnerReplay" type="button" disabled>Cho chơi lại 🎡</button>
             <button class="btnSecondary" id="btnHint" type="button">Tip mật khẩu</button>
           </div>
 
@@ -191,6 +190,9 @@
             <span class="cdm"><b id="cdMiniSeconds2">00</b></span>
           </div>
 
+          <!-- NEW: nút Nhận lộc (bị khóa cho tới khi gửi lời chúc) -->
+          <button class="btnSecondary" id="btnOpenLuck" type="button" disabled>🎁 Nhận lộc</button>
+
           <select id="musicSelect" class="musicSelect" aria-label="Chọn nhạc"></select>
           <button class="btnMusic" id="btnPrev" title="Bài trước">⏮</button>
           <button class="btnMusic" id="btnMusic" aria-label="Bật/Tắt nhạc">
@@ -202,6 +204,11 @@
           <button class="btnSecondary hidden ownerBtn" id="btnOwnerLogout" type="button">🔓 Owner Logout</button>
           <button class="btnSecondary hidden ownerBtn" id="btnOwnerDashboard" type="button">📊 Dashboard</button>
         </div>
+      </div>
+
+      <!-- NEW: hint khóa game -->
+      <div id="gameLockHintTop" class="gameLockHintTop" style="display:none">
+        💌 Bạn hãy <b>Gửi lời chúc</b> cho chủ sở hữu trước để mở khóa “Nhận lộc”.
       </div>
 
       <!-- ===== Main content ===== -->
@@ -283,6 +290,7 @@ Cảm ơn bạn năm qua đã ở bên cạnh tôi nhé.
 Mong năm 2026 chúng ta vẫn tiếp tục đồng hành với nhau 💖
       </p>
       <div class="row" style="justify-content:center">
+        <button id="btnSuccessLuck" class="btnSecondary" type="button">🎁 Nhận lộc ngay</button>
         <button id="btnSuccessClose" class="btnPrimary" type="button">Quay lại thiệp</button>
       </div>
     </div>
@@ -295,7 +303,6 @@ Mong năm 2026 chúng ta vẫn tiếp tục đồng hành với nhau 💖
 
   <!-- config + services -->
   <script src="./config.js"></script>
-  <script src="./demoConfig.js"></script>
   <script type="module" src="./services.js?v=20260216"></script>
   <script type="module" src="./app.js?v=20260216"></script>
 </body>

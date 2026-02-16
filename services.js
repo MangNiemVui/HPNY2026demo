@@ -91,7 +91,7 @@ async function startView(viewer, target){
 }
 
 async function stopView(){
-  // demo: không update endedAt để tránh cần quyền update
+  // Không update endedAt để tránh cần quyền update (tuỳ Firestore Rules)
   viewSession = null;
 }
 
