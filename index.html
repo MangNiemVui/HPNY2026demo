@@ -166,6 +166,8 @@
           <div class="row2">
             <button id="btnUnlock" class="btnPrimary" type="button">Mở thiệp ✨</button>
             <button class="btnSecondary" id="btnOwnerView" type="button" disabled>Xem thiệp người này (Owner)</button>
+            <!-- NEW: Owner cho chơi lại (local) -->
+            <button class="btnSecondary" id="btnOwnerReplay" type="button" disabled>Cho chơi lại 🎡</button>
             <button class="btnSecondary" id="btnHint" type="button">Tip mật khẩu</button>
           </div>
 
@@ -191,6 +193,9 @@
             <span class="cdm"><b id="cdMiniSeconds2">00</b></span>
           </div>
 
+          <!-- NEW: nút Nhận lộc (bị khóa cho tới khi gửi lời chúc) -->
+          <button class="btnSecondary" id="btnOpenLuck" type="button" disabled>🎁 Nhận lộc</button>
+
           <select id="musicSelect" class="musicSelect" aria-label="Chọn nhạc"></select>
           <button class="btnMusic" id="btnPrev" title="Bài trước">⏮</button>
           <button class="btnMusic" id="btnMusic" aria-label="Bật/Tắt nhạc">
@@ -202,6 +207,11 @@
           <button class="btnSecondary hidden ownerBtn" id="btnOwnerLogout" type="button">🔓 Owner Logout</button>
           <button class="btnSecondary hidden ownerBtn" id="btnOwnerDashboard" type="button">📊 Dashboard</button>
         </div>
+      </div>
+
+      <!-- NEW: hint khóa game -->
+      <div id="gameLockHintTop" class="gameLockHintTop" style="display:none">
+        💌 Bạn hãy <b>Gửi lời chúc</b> cho chủ sở hữu trước để mở khóa “Nhận lộc”.
       </div>
 
       <!-- ===== Main content ===== -->
