@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-label="Ngựa 2026">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe7a3"/>
+      <stop offset="0.45" stop-color="#ffd05a"/>
+      <stop offset="1" stop-color="#ffb11f"/>
+    </linearGradient>
+    <linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b40018"/>
+      <stop offset="1" stop-color="#ff2a3f"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Medallion -->
+  <circle cx="400" cy="400" r="350" fill="url(#gRed)"/>
+  <circle cx="400" cy="400" r="330" fill="none" stroke="url(#gGold)" stroke-width="18"/>
+  <circle cx="400" cy="400" r="300" fill="#9d0018" opacity="0.25"/>
+
+  <!-- Stylized horse (simple silhouette) -->
+  <path fill="url(#gGold)" filter="url(#glow)"
+    d="M525 225c-34 5-63 24-86 51-21 25-35 55-41 88-3 17-4 34-2 51l-7 7-40-20c-12-6-26-2-33 9l-22 36c-6 10-4 23 5 30l35 28c-9 13-16 28-20 44l-15 69c-3 13 6 26 20 28l0 0c12 2 24-5 27-17l18-70c6-23 19-44 38-59l23-18 63 22c27 10 57 6 80-10l42-29c11-7 14-22 7-33l-18-28 11-12c20-22 32-50 35-80 5-46-10-94-40-128l0 0c-3-3-8-4-12-1l-33 22-20-15c-8-6-18-9-28-8z
+
+      M355 455l-21 16c-13 10-22 24-26 39l-18 70c-2 7-9 12-16 10-9-1-14-10-12-18l15-69c4-17 12-32 23-45l55-3z
+
+      M485 310c20-10 43-2 53 18 10 20 2 43-18 53-20 10-43 2-53-18-10-20-2-43 18-53z"/>
+
+  <!-- Mane / tail accents -->
+  <path fill="#fff2c7" opacity="0.65"
+        d="M544 250c-20 12-38 31-52 55 29-24 56-36 84-41l-32-14z"/>
+  <path fill="#fff2c7" opacity="0.55"
+        d="M478 520c36 10 73 2 102-22l-58 44c-14 10-31 14-48 12l4-34z"/>
+
+  <!-- 2026 -->
+  <g filter="url(#glow)">
+    <text x="400" y="690" text-anchor="middle"
+          font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial"
+          font-size="92" font-weight="900" fill="url(#gGold)" letter-spacing="6">2026</text>
+  </g>
+
+  <!-- Small sparkles -->
+  <g fill="#fff4d2" opacity="0.9">
+    <circle cx="205" cy="300" r="5"/>
+    <circle cx="610" cy="310" r="4"/>
+    <circle cx="565" cy="190" r="3"/>
+    <circle cx="255" cy="205" r="3"/>
+    <circle cx="180" cy="450" r="3"/>
+    <circle cx="625" cy="450" r="3"/>
+  </g>
+</svg>
