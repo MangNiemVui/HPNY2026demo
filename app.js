@@ -1,5 +1,11 @@
 // app.js — HPNY 2026 (Năm Ngọ)
 // Giữ nguyên data đăng nhập + lời chúc; thêm flow mini-game demo sau đăng nhập.
+// ✅ Flow mới:
+// 1) Nhận thư trước
+// 2) Gửi lời chúc thành công -> mới unlock "Nhận lộc"
+// 3) Mỗi người chơi 1 lần
+// 4) Owner có quyền "Cho chơi lại" (reset local trên máy hiện tại)
+// (Gmail/Server chỉnh sau)
 
 // ===== Helpers =====
 const $ = (id) => document.getElementById(id);
@@ -41,8 +47,7 @@ function formatMoneyVND(amount){
 }
 
 // ===== Countdown (Tết 2026) =====
-// Tết Nguyên Đán 2026 (Bính Ngọ) thường được nhắc là 17/02/2026.
-// Dùng timezone +07:00 để hiển thị ổn định.
+// Tết Nguyên Đán 2026: 17/02/2026 (timezone +07:00)
 const TET_TARGET_MS = new Date('2026-02-17T00:00:00+07:00').getTime();
 
 function initCountdown(){
@@ -78,7 +83,6 @@ function initCountdown(){
     if (!Number.isFinite(diff)) diff = 0;
 
     if (diff <= 0){
-      // Already Tết 🎉
       [elBig, elMini1, elMini2].forEach(g => {
         setNum(g.d, 0);
         setNum(g.h, 0, true);
@@ -154,15 +158,12 @@ function demoLookup(map, person){
   const key = removeDiacritics(person?.key || "");
   const label = removeDiacritics(person?.label || "");
 
-  // try direct
   if (key && map[key] != null) return map[key];
   if (label && map[label] != null) return map[label];
 
-  // try combined
   const combo = removeDiacritics(`${person?.key||""} ${person?.label||""}`);
   if (combo && map[combo] != null) return map[combo];
 
-  // fallback
   if (map.default != null) return map.default;
   return null;
 }
@@ -209,6 +210,38 @@ let flowState = {
 
 const BANK_STORAGE_PREFIX = 'hpny2026_bank_';
 
+// ===== Play lock (NEW) =====
+function playKey(){
+  // khóa theo người đang login (viewer), không phải target
+  return String(session?.viewer?.key || "");
+}
+function keyUnlocked(k){ return "hpny2026_unlocked_" + k; }
+function keyPlayed(k){ return "hpny2026_played_" + k; }
+function keyOwnerReplay(k){ return "hpny2026_owner_replay_" + k; }
+
+function isUnlocked(k){ return localStorage.getItem(keyUnlocked(k)) === "1"; }
+function setUnlocked(k){
+  if (!k) return;
+  localStorage.setItem(keyUnlocked(k), "1");
+  refreshGameLockUI();
+}
+
+function canReplay(k){ return localStorage.getItem(keyOwnerReplay(k)) === "1"; }
+function consumeReplay(k){
+  if (!k) return;
+  if (canReplay(k)){
+    localStorage.removeItem(keyOwnerReplay(k));
+    localStorage.removeItem(keyPlayed(k));
+  }
+}
+
+function hasPlayed(k){ return localStorage.getItem(keyPlayed(k)) === "1"; }
+function markPlayed(k){
+  if (!k) return;
+  localStorage.setItem(keyPlayed(k), "1");
+}
+
+// ===== Flow UI =====
 function showFlow(){
   if (!flow) return;
   flow.classList.remove('hidden');
@@ -250,7 +283,7 @@ function saveBankInfoFor(person, payload){
   }catch{}
 }
 
-// Wheel segments: chỉ 2 phần quà (bracelet/ring) + các ô "Chúc may mắn" (không tính quà)
+// Wheel segments: chỉ 2 phần quà (bracelet/ring) + các ô "Chúc may mắn"
 const WHEEL_SEGMENTS = [
   { id: 'try', label: 'Chúc may mắn', prize: false },
   { id: 'ring', label: 'Nhẫn Pandora', prize: true },
@@ -284,7 +317,6 @@ function resetWheelUI(){
   if (!wheelEl) return;
   wheelEl.style.transition = 'none';
   wheelEl.style.transform = 'rotate(0deg)';
-  // force reflow
   void wheelEl.offsetWidth;
   wheelEl.style.transition = 'transform 4.2s cubic-bezier(.17,.67,.12,1)';
 
@@ -297,7 +329,6 @@ function resetWheelUI(){
 }
 
 function getWheelOutcomeFor(person){
-  // returns 'ring' | 'bracelet' | 'none'
   if (isDemoMode()){
     const forced = demoLookup(window.DEMO_FORCE?.wheel, person);
     if (forced === 'ring' || forced === 'bracelet' || forced === 'none') return forced;
@@ -317,7 +348,6 @@ function pickSegmentIndexForOutcome(outcome){
     if (outcome === 'none' && WHEEL_SEGMENTS[i].id === 'try') idxs.push(i);
     if (outcome !== 'none' && WHEEL_SEGMENTS[i].id === outcome) idxs.push(i);
   }
-
   if (!idxs.length) return 0;
   return idxs[(Math.random()*idxs.length)|0];
 }
@@ -329,7 +359,6 @@ function spinWheelToIndex(idx){
     const baseTurns = 6 + ((Math.random() * 3) | 0); // 6-8
     const jitter = (Math.random() * (WHEEL_ANGLE * 0.6)) - (WHEEL_ANGLE * 0.3);
 
-    // want segment idx centered at pointer (0deg)
     const target = (360 - (idx * WHEEL_ANGLE)) % 360;
     const finalDeg = baseTurns * 360 + target + jitter;
 
@@ -342,10 +371,10 @@ function spinWheelToIndex(idx){
 
 function wheelResultText(outcome){
   if (outcome === 'ring'){
-    return "🎉 Chúc mừng! Bạn đã quay trúng: NHẪN PANDORA 💍\n\n(Trong demo, kết quả được preset để test.)";
+    return "🎉 Chúc mừng! Bạn đã quay trúng: NHẪN PANDORA 💍";
   }
   if (outcome === 'bracelet'){
-    return "🎉 Chúc mừng! Bạn đã quay trúng: VÒNG TAY PANDORA ✨\n\n(Trong demo, kết quả được preset để test.)";
+    return "🎉 Chúc mừng! Bạn đã quay trúng: VÒNG TAY PANDORA ✨";
   }
   return "😄 Chưa trúng giải lớn lần này.\n\nĐừng lo, mình còn có ‘lắc quẻ may mắn’ để nhận lộc đầu năm 🧧";
 }
@@ -406,7 +435,7 @@ function getFortuneFor(person){
   const amount = getFortuneAmountFor(person);
   const pool = FORTUNE_MESSAGES[amount] || FORTUNE_MESSAGES[50000];
 
-  // deterministic per user key + amount (để cùng giá tiền nhưng mỗi người 1 câu khác)
+  // deterministic per user key + amount
   const seed = `${person?.key || person?.label || ''}|${amount}`;
   const idx = hashStringFNV1a(seed) % pool.length;
   const msg = formatWishTokens(pool[idx], person);
@@ -416,6 +445,15 @@ function getFortuneFor(person){
 
 function startFlowFor(person){
   if (!person) return;
+
+  // ✅ mỗi người chỉ chơi 1 lần (trừ khi Owner cho replay)
+  const k = playKey();
+  consumeReplay(k);
+  if (!isOwnerRole() && hasPlayed(k)){
+    alert("Bạn đã chơi rồi 😊 Mỗi người chỉ chơi 1 lần.");
+    return;
+  }
+  markPlayed(k);
 
   flowState = {
     active: true,
@@ -428,12 +466,10 @@ function startFlowFor(person){
 
   setDemoBannerVisible();
 
-  // prefill bank if available
   const saved = loadBankInfoFor(person);
   if (bankName) bankName.value = saved?.bankName || '';
   if (bankAccount) bankAccount.value = saved?.bankAccount || '';
 
-  // reset UI
   resetWheelUI();
   fortuneMoney && (fortuneMoney.textContent = '—');
   fortuneMsg && (fortuneMsg.textContent = 'Bấm “Lắc quẻ” để nhận lời chúc.');
@@ -499,7 +535,6 @@ btnSpin?.addEventListener('click', async () => {
 
   flowState.wheelOutcome = outcome;
 
-  // Fireworks as feedback
   try{ burst(innerWidth*0.5, innerHeight*0.28, 120); }catch{}
 
   await spinWheelToIndex(idx);
@@ -531,7 +566,6 @@ btnShake?.addEventListener('click', () => {
   if (!person) return;
 
   if (flowState.fortuneDone){
-    // allow re-shake in non-demo? For demo keep locked.
     return;
   }
 
@@ -541,7 +575,6 @@ btnShake?.addEventListener('click', () => {
 
   const { amount, msg } = getFortuneFor(person);
 
-  // show result after a short delay to sync with shake
   setTimeout(() => {
     fortuneMoney && (fortuneMoney.textContent = `🎊 ${formatMoneyVND(amount)}`);
     fortuneMsg && (fortuneMsg.textContent = msg);
@@ -711,6 +744,10 @@ const yearText = $("yearText");
 const yearInput = $("yearInput");
 const defaultYear = new Date().getFullYear();
 
+// NEW buttons (tùy bạn đã thêm vào index.html hay chưa)
+const btnOpenLuck = $("btnOpenLuck");        // nút 🎁 Nhận lộc (topbar)
+const btnOwnerReplay = $("btnOwnerReplay");  // nút Owner cho chơi lại
+
 yearText.textContent = String(defaultYear);
 yearInput.value = String(defaultYear);
 yearInput.addEventListener('input', () => {
@@ -721,7 +758,6 @@ yearInput.addEventListener('input', () => {
 
 // ===== Wishes data (GIỮ NGUYÊN) =====
 const GLOBAL_WISHES = [
-  // 🇻🇳 VN + 🇺🇸 EN + 🇰🇷 KR (đã trộn lộn xộn)
   "Chúc {name} năm {year} luôn bình an và được yêu thương thật nhiều 💖",
   "May {year} bring you calm days and bright nights, {name}. ✨",
   "{year}년에는 {name}님에게 행복이 가득하길 바라요 🌸",
@@ -739,10 +775,9 @@ const GLOBAL_WISHES = [
   "{year}년에도 {name}님이 원하는 길로 쭉 나아가길 🚀",
   "Năm {year} chúc {name} đi đâu cũng gặp điều lành, về đâu cũng thấy yên 🏡✨",
   "May {year} be kind to you, {name}. 🤍",
-  "{name}님, {year}년에는 마음이 늘 편안하길 🌿",
+  "{name}님, {year}년엔 마음이 늘 편안하길 🌿",
   "Chúc {name} năm {year} rực rỡ theo cách của riêng mình 🌟",
   "Wishing {name} a {year} filled with love, laughter, and peace. 🕊️",
-
   "Năm {year} chúc {name} làm đâu thắng đó, thuận lợi đủ đường 🚀",
   "May your hard work pay off beautifully in {year}, {name}. 📈",
   "{year}년엔 {name}님에게 행운이 자주 찾아오길 🍀",
@@ -763,7 +798,6 @@ const GLOBAL_WISHES = [
   "{name}님, {year}년엔 모든 일이 술술 풀리길 🌈",
   "Năm {year} chúc {name} mỗi ngày đều có lý do để vui 😄✨",
   "May {year} be your fresh start, {name}. 🌸",
-
   "Chúc {name} {year} sáng tạo bùng nổ, ý tưởng ra như suối 💡🌊",
   "May you find joy in the little things this {year}, {name}. 🌼",
   "{name}님, {year}년엔 새로운 시작이 기분 좋게 이어지길 🌱",
@@ -822,13 +856,30 @@ function updateOwnerUI(){
   btnOwnerLogin?.classList.toggle('hidden', !ownerRole || authed);
   btnOwnerLogout?.classList.toggle('hidden', !ownerRole || !authed);
   btnOwnerDashboard?.classList.toggle('hidden', !ownerRole || !authed);
+
+  // enable owner replay button only when owner logged in and a person is selected
+  if (btnOwnerReplay){
+    btnOwnerReplay.disabled = !(ownerRole && session.loggedIn && selectedPerson);
+  }
 }
 
+// ===== Game lock UI (NEW) =====
+function refreshGameLockUI(){
+  const k = playKey();
+  const owner = isOwnerRole();
+  const ok = owner || (k && isUnlocked(k));
+
+  if (btnOpenLuck){
+    btnOpenLuck.disabled = !ok;
+    btnOpenLuck.classList.toggle("disabled", !ok);
+  }
+}
+
+// ===== Owner modal =====
 function openOwnerModal(){
   ownerModal?.classList.remove('hidden');
   renderOwnerTab();
 }
-
 function closeOwnerModal(){
   ownerModal?.classList.add('hidden');
 }
@@ -1084,6 +1135,7 @@ function pickPersonByKey(key){
   selectText.innerHTML = `<span>${escapeHtml(p.label)} <small>(@${escapeHtml(p.key)})</small></span>`;
   closeMenu();
   btnOwnerView.disabled = !(session.loggedIn && session.viewer && session.viewer.role === 'owner');
+  updateOwnerUI();
 }
 
 selectBtn?.addEventListener('click', () => {
@@ -1106,7 +1158,6 @@ function lockCard(msg){
   session = { loggedIn:false, viewer:null, target:null };
   firstWishShown.clear();
 
-  // reset post-login flow
   hideFlow();
 
   userChangedTrack = false;
@@ -1136,6 +1187,8 @@ function lockCard(msg){
 
   btnOwnerView.disabled = true;
   btnLogout.classList.add('hidden');
+
+  refreshGameLockUI();
   setStatus(msg || '👉 Chọn người + nhập mật khẩu để bắt đầu.', false);
 }
 
@@ -1175,10 +1228,8 @@ function applySessionUI(){
   updateOwnerUI();
   burst(innerWidth*0.5, innerHeight*0.28, 180);
 
-  // ✅ Trigger post-login flow (only when user views their own card, non-owner)
-  if (v && t && v.key === t.key && v.role !== 'owner'){
-    startFlowFor(t);
-  }
+  // ✅ KHÔNG auto start flow nữa
+  refreshGameLockUI();
 }
 
 btnUnlock?.addEventListener('click', () => {
@@ -1208,6 +1259,22 @@ btnOwnerView?.addEventListener('click', () => {
 });
 
 btnLogout?.addEventListener('click', () => lockCard('👋 Đã đăng xuất.'));
+
+// NEW: Owner cho chơi lại (local)
+btnOwnerReplay?.addEventListener('click', () => {
+  if (!isOwnerRole() || !selectedPerson){
+    setStatus('❌ Chỉ Owner mới dùng được.', true);
+    return;
+  }
+  const k = String(selectedPerson.key || "");
+  if (!k) return;
+  localStorage.setItem(keyOwnerReplay(k), "1");
+  localStorage.removeItem(keyPlayed(k));
+  localStorage.setItem(keyUnlocked(k), "1"); // owner cho chơi lại thì coi như unlocked (local)
+  alert("✅ Đã cho người này chơi lại (trên máy hiện tại).");
+  updateOwnerUI();
+  refreshGameLockUI();
+});
 
 btnOwnerLogin?.addEventListener('click', async () => {
   try{
@@ -1242,6 +1309,20 @@ function hideSuccessPage(){ successPage?.classList.add('hidden'); }
 btnSuccessClose?.addEventListener('click', hideSuccessPage);
 successPage?.addEventListener('click', (e) => { if (e.target === successPage) hideSuccessPage(); });
 
+// NEW: nút "Nhận lộc" (topbar) — chỉ mở khi unlocked hoặc owner
+btnOpenLuck?.addEventListener('click', () => {
+  if (!session.loggedIn){ alert("Bạn cần mở thiệp trước đã 😊"); return; }
+
+  const k = playKey();
+  const owner = isOwnerRole();
+  if (!owner && !isUnlocked(k)){
+    alert("Bạn hãy Gửi lời chúc cho chủ sở hữu trước để mở khóa Nhận lộc nhé 💌");
+    return;
+  }
+  startFlowFor(session.target);
+});
+
+// Send wish: gửi xong -> unlock game
 btnSendWish?.addEventListener('click', async () => {
   const message = (wishMsg.value || '').trim();
   if (!message){
@@ -1264,6 +1345,10 @@ btnSendWish?.addEventListener('click', async () => {
     if (result && result.savedToFirestore) {
       wishMsg.value = '';
       showSuccessPage();
+
+      // ✅ unlock game sau khi gửi thành công
+      setUnlocked(playKey());
+
       if (result.emailed) setStatus('✅ Đã gửi email thành công! 💌', false);
       else setStatus('✅ Đã lưu lời chúc! (Email chưa gửi được — xem Console)', false);
     } else {
@@ -1415,16 +1500,12 @@ function step(){
 
 // ===== Init =====
 (async function init(){
-  // countdown + decor
   initCountdown();
   initPetals();
   window.addEventListener('resize', () => initPetals(), { passive:true });
 
-  // wheel UI
   buildWheelUI();
   resetWheelUI();
-
-  // demo banner
   setDemoBannerVisible();
 
   try{
@@ -1445,5 +1526,5 @@ function step(){
   ctx.clearRect(0,0,W,H);
   step();
   setTimeout(() => burst(W*0.5, H*0.28, 90), 350);
-  try{ updateOwnerUI(); }catch(e){}
+  try{ updateOwnerUI(); refreshGameLockUI(); }catch(e){}
 })();
